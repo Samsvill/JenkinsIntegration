@@ -1,3 +1,21 @@
+class GymMembership:
+    def __init__(self, name, base_cost, additional_features=None):
+        self.name = name
+        self.base_cost = base_cost
+        self.additional_features = additional_features if additional_features else {}
+        self.selected_features = []
+
+    def add_feature(self, feature_name):
+        if feature_name in self.additional_features:
+            self.selected_features.append(feature_name)
+        else:
+            raise ValueError(f"Feature {feature_name} is not available for {self.name} membership.")
+
+    def calculate_cost(self):
+        total_cost = self.base_cost
+        for feature in self.selected_features:
+            total_cost += self.additional_features[feature]
+        return total_cost
 class Gym:
     def __init__(self):
         self.memberships = {}
@@ -49,6 +67,8 @@ class Gym:
             return total_cost
         else:
             return -1
+        
+
 
 def main():
     gym = Gym()
@@ -60,7 +80,45 @@ def main():
     gym.add_membership(premium_membership)
     gym.add_membership(family_membership)
 
-    
+    while True:
+        print("\nAvailable Memberships:")
+        memberships_list = list(gym.memberships.values())
+        for i, membership in enumerate(memberships_list, start=1):
+            print(f"{i}.  {membership.name} - Base Cost: ${membership.base_cost}")
+        
+        print("\nREMEMBER!!! If two or more members sign up for the same membership plan together, apply a 10 percent discount on the total membership cost")
+
+      
+        try:
+            membership_selection = int(input("Select a membership plan: ")) - 1
+            print (membership_selection)
+            if membership_selection < 0 or membership_selection >= len(memberships_list):
+                raise ValueError("Invalid selection. Please select a valid number.")
+            membership = memberships_list[membership_selection]
+            print(membership.name)
+            num_members = int(input("Enter the number of members to subscribe: "))
+
+            while True:
+                print("\nAvailable Features:")
+                for feature in membership.additional_features:
+                    print(f"  - {feature}: ${membership.additional_features[feature]}")
+                
+                feature_name = input("Add a feature (or 'done' to finish): ")
+                if feature_name.lower() == 'done':
+                    break
+                try:
+                    membership.add_feature(feature_name)
+                except ValueError as e:
+                    print(e)
+
+            
+            total_cost = gym.confirm_membership(membership, num_members)
+            if total_cost != -1:
+                print(f"Membership confirmed. Total cost: ${total_cost}")
+            else:
+                print("Membership not confirmed.")
+        except ValueError as e:
+            print(e)
 
 if __name__ == "__main__":
     main()
