@@ -26,8 +26,8 @@ class Gym:
         self.memberships = {}
         self.group_discount = 0.10
         self.special_discounts = [
-            (200, 20),
-            (400, 50)
+            (400, 50),
+            (200, 20)      
         ]
         self.premium_surcharge = 0.15
 
@@ -60,10 +60,12 @@ class Gym:
             total_cost -= total_cost * self.group_discount
             print(f"Group discount applied: {self.group_discount * 100}%")
 
-        for threshold, discount in self.special_discounts:
+        sorted_special_discounts = sorted(self.special_discounts, key=lambda x: x[0], reverse=True)
+        for threshold, discount in sorted_special_discounts:
             if total_cost > threshold:
                 total_cost -= discount
                 print(f"Special discount of ${discount} applied for total cost over ${threshold}")
+                break  # Rompe después de aplicar el primer descuento válido
 
         return total_cost
 
