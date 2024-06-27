@@ -1,3 +1,4 @@
+
 class GymMembership:
     def __init__(self, name, base_cost, additional_features=None):
         self.name = name
@@ -8,6 +9,9 @@ class GymMembership:
     def add_feature(self, feature_name):
         if feature_name in self.additional_features:
             self.selected_features.append(feature_name)
+            print("\n-----------------------------------------------------\n" +
+                f"Adding {feature_name} feature to your membership...\n" +
+                "-----------------------------------------------------\n ")
         else:
             raise ValueError(f"Feature {feature_name} is not available for {self.name} membership.")
 
@@ -16,6 +20,7 @@ class GymMembership:
         for feature in self.selected_features:
             total_cost += self.additional_features[feature]
         return total_cost
+    
 class Gym:
     def __init__(self):
         self.memberships = {}
@@ -72,10 +77,14 @@ class Gym:
 
 def main():
     gym = Gym()
-    additional_features = {"WiFi": 10, "Personal Trainer": 50}
-    basic_membership = GymMembership("Basic", 100, additional_features)
-    premium_membership = GymMembership("Premium", 200)
-    family_membership = GymMembership("Family", 300)
+    basic_features = {"Group Classes": 25, "Crossfit Sessions": 10}
+    premium_features = {"Personal Trainer": 40, "Sauna": 10, "Nutrition Plan": 20}
+    family_features = {"Tennis Court": 10, "Group Classes": 15}
+
+    basic_membership = GymMembership("Basic", 40, basic_features)
+    premium_membership = GymMembership("Premium", 70, premium_features)
+    family_membership = GymMembership("Family", 100, family_features)
+
     gym.add_membership(basic_membership)
     gym.add_membership(premium_membership)
     gym.add_membership(family_membership)
@@ -85,13 +94,13 @@ def main():
         memberships_list = list(gym.memberships.values())
         for i, membership in enumerate(memberships_list, start=1):
             print(f"{i}.  {membership.name} - Base Cost: ${membership.base_cost}")
-        
-        print("\nREMEMBER!!! If two or more members sign up for the same membership plan together, apply a 10 percent discount on the total membership cost")
 
+        print("\n ------------------------ATENTION!!------------------------------------\n" +
+            "\n If two or more members sign up for the same membership plan together, \n apply a 10 percent discount on the total membership cost\n" +
+            "\n ------------------------------------------------------------------------\n ")
       
         try:
             membership_selection = int(input("Select a membership plan: ")) - 1
-            print (membership_selection)
             if membership_selection < 0 or membership_selection >= len(memberships_list):
                 raise ValueError("Invalid selection. Please select a valid number.")
             membership = memberships_list[membership_selection]
@@ -101,7 +110,8 @@ def main():
             while True:
                 print("\nAvailable Features:")
                 for feature in membership.additional_features:
-                    print(f"  - {feature}: ${membership.additional_features[feature]}")
+                    if feature not in membership.selected_features: 
+                        print(f"  - {feature}: ${membership.additional_features[feature]}")
                 
                 feature_name = input("Add a feature (or 'done' to finish): ")
                 if feature_name.lower() == 'done':
