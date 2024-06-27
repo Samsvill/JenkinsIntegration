@@ -81,8 +81,8 @@ def main():
     premium_features = {"Personal Trainer": 40, "Sauna": 10, "Nutrition Plan": 20}
     family_features = {"Tennis Court": 10, "Group Classes": 15}
 
-    basic_membership = GymMembership("Basic", 40, basic_features)
-    premium_membership = GymMembership("Premium", 70, premium_features)
+    basic_membership = GymMembership("Basic", 60, basic_features)
+    premium_membership = GymMembership("Premium", 80, premium_features)
     family_membership = GymMembership("Family", 100, family_features)
 
     gym.add_membership(basic_membership)
@@ -90,36 +90,42 @@ def main():
     gym.add_membership(family_membership)
 
     while True:
-        print("\nAvailable Memberships:")
+        print("\n -----------------WELCOME TO YOUR FAVOURITE GYM-------------------\n" +"\nAvailable Memberships:")
         memberships_list = list(gym.memberships.values())
         for i, membership in enumerate(memberships_list, start=1):
             print(f"{i}.  {membership.name} - Base Cost: ${membership.base_cost}")
 
         print("\n ------------------------ATENTION!!------------------------------------\n" +
             "\n If two or more members sign up for the same membership plan together, \n apply a 10 percent discount on the total membership cost\n" +
-            "\n ------------------------------------------------------------------------\n ")
+            "\n ------------------------------------------------------------------------\n")
       
         try:
             membership_selection = int(input("Select a membership plan: ")) - 1
             if membership_selection < 0 or membership_selection >= len(memberships_list):
                 raise ValueError("Invalid selection. Please select a valid number.")
             membership = memberships_list[membership_selection]
-            print(membership.name)
-            num_members = int(input("Enter the number of members to subscribe: "))
+            print(f"\nYou have choosen {membership.name} Plan for your membership." )
+            num_members = int(input("\nEnter the number of members to subscribe: "))
 
             while True:
                 print("\nAvailable Features:")
-                for feature in membership.additional_features:
-                    if feature not in membership.selected_features: 
-                        print(f"  - {feature}: ${membership.additional_features[feature]}")
+                features_list = [feature for feature in membership.additional_features.keys() if feature not in membership.selected_features]
+                for i, feature in enumerate(features_list, start=1):
+                    print(f"{i}. {feature}: ${membership.additional_features[feature]}")
                 
-                feature_name = input("Add a feature (or 'done' to finish): ")
-                if feature_name.lower() == 'done':
+                feature_selection = input("\nSelect a feature to add (or 'done' to finish): ")
+                if feature_selection.lower() == 'done':
                     break
-                try:
-                    membership.add_feature(feature_name)
-                except ValueError as e:
-                    print(e)
+                else:
+                    try:
+                        feature_selection = int(feature_selection) - 1
+                        if feature_selection < 0 or feature_selection >= len(features_list):
+                            raise ValueError("Invalid selection. Please select a valid number.")
+                        feature_name = features_list[feature_selection]
+                        membership.selected_features.append(feature_name)  # Asumiendo que selected_features es un set
+                        print(f"Adding {feature_name} feature to your membership.")
+                    except ValueError as e:
+                        print(e)
 
             
             total_cost = gym.confirm_membership(membership, num_members)
