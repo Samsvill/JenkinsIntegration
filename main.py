@@ -17,8 +17,11 @@ class GymMembership:
 
     def calculate_cost(self):
         total_cost = self.base_cost
+        print(f"\nCOSTO BASE: {total_cost} DEL PLAN: ${self.name}")
         for feature in self.selected_features:
+            print(f"FEATURE: {feature} - COSTO: ${self.additional_features[feature]}")
             total_cost += self.additional_features[feature]
+        print(f"TOTAL COSTO DE UNO SIN DESCUENTO: ${total_cost}")
         return total_cost
     
 class Gym:
@@ -49,6 +52,13 @@ class Gym:
     def calculate_total_cost(self, membership, num_members=1):
         base_cost = membership.calculate_cost()
         total_cost = base_cost * num_members
+        print(f"COSTO TOTAL PARA {num_members} MIEMBROS SIN DESCUENTO: ${total_cost}")
+
+        if membership.name == "Premium" and len(membership.selected_features) >= 1:
+            recargo = total_cost * 0.15
+            total_cost += recargo
+            print(f"Recargo del 15% aplicado por ser plan Premium con al menos 1 feature: ${recargo}")
+
 
         if num_members >= 2:
             total_cost -= total_cost * self.group_discount
@@ -89,7 +99,8 @@ def main():
     gym.add_membership(premium_membership)
     gym.add_membership(family_membership)
 
-    while True:
+    continue_in_system = True
+    while continue_in_system:
         print("\n -----------------WELCOME TO YOUR FAVOURITE GYM-------------------\n" +"\nAvailable Memberships:")
         memberships_list = list(gym.memberships.values())
         for i, membership in enumerate(memberships_list, start=1):
@@ -133,6 +144,15 @@ def main():
                 print(f"Membership confirmed. Total cost: ${total_cost}")
             else:
                 print("Membership not confirmed.")
+            # Limpiar las características seleccionadas después de confirmar la membresía
+            membership.selected_features.clear()
+
+            # Preguntar al usuario si desea continuar en el sistema
+            continue_response = input("Do you want to continue in the system? (yes/no): ").lower()
+            continue_in_system = continue_response == 'yes'
+            if not continue_in_system:
+                print("Goodbye!")
+
         except ValueError as e:
             print(e)
 
