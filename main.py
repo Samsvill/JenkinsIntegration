@@ -17,11 +17,8 @@ class GymMembership:
 
     def calculate_cost(self):
         total_cost = self.base_cost
-        print(f"\nCOSTO BASE: {total_cost} DEL PLAN: ${self.name}")
         for feature in self.selected_features:
-            print(f"FEATURE: {feature} - COSTO: ${self.additional_features[feature]}")
             total_cost += self.additional_features[feature]
-        print(f"TOTAL COSTO DE UNO SIN DESCUENTO: ${total_cost}")
         return total_cost
     
 class Gym:
@@ -52,13 +49,12 @@ class Gym:
     def calculate_total_cost(self, membership, num_members=1):
         base_cost = membership.calculate_cost()
         total_cost = base_cost * num_members
-        print(f"COSTO TOTAL PARA {num_members} MIEMBROS SIN DESCUENTO: ${total_cost}")
+       
 
         if membership.name == "Premium" and len(membership.selected_features) >= 1:
-            recargo = total_cost * 0.15
-            total_cost += recargo
-            print(f"Recargo del 15% aplicado por ser plan Premium con al menos 1 feature: ${recargo}")
-
+            surcharge = total_cost * 0.15
+            total_cost += surcharge
+            print(f"15% surcharge applied for being a Premium plan with at least 1 feature: ${surcharge}")
 
         if num_members >= 2:
             total_cost -= total_cost * self.group_discount
@@ -72,18 +68,21 @@ class Gym:
         return total_cost
 
     def confirm_membership(self, membership, num_members=1):
-        total_cost = self.calculate_total_cost(membership, num_members)
-        print(f"Membership: {membership.name}")
-        print(f"Base Cost: ${membership.base_cost}")
-        print(f"Additional Features: {', '.join(membership.selected_features)}")
-        print(f"Total Cost: ${total_cost}")
-        confirmation = input("Do you want to confirm this membership? (yes/no): ").lower()
-        if confirmation == 'yes':
-            return total_cost
-        else:
+        try:
+            total_cost = self.calculate_total_cost(membership, num_members)
+            print(f"Membership: {membership.name}")
+            print(f"Base Cost: ${membership.base_cost}")
+            print(f"Additional Feature(s): {' - '.join([f'{feature} (Cost ${membership.additional_features[feature]})' for feature in membership.selected_features])}")
+            print(f"\nTotal Cost: ${total_cost}\n")
+            confirmation = input("Do you want to confirm this membership? (yes/no): ").lower()
+            if confirmation == 'yes':
+                return total_cost
+            else:
+                return -1
+        except Exception as e:
+            print(f"Error: {e}")
             return -1
         
-
 
 def main():
     gym = Gym()
@@ -125,6 +124,7 @@ def main():
                     print(f"{i}. {feature}: ${membership.additional_features[feature]}")
                 
                 feature_selection = input("\nSelect a feature to add (or 'done' to finish): ")
+                print("\n")
                 if feature_selection.lower() == 'done':
                     break
                 else:
@@ -143,18 +143,18 @@ def main():
             if total_cost != -1:
                 print(f"Membership confirmed. Total cost: ${total_cost}")
             else:
-                print("Membership not confirmed.")
-            # Limpiar las características seleccionadas después de confirmar la membresía
+                print("Membership not confirmed.") 
+
             membership.selected_features.clear()
 
-            # Preguntar al usuario si desea continuar en el sistema
-            continue_response = input("Do you want to continue in the system? (yes/no): ").lower()
+            continue_response = input("\nDo you want to continue in the system? (yes/no): ").lower()
             continue_in_system = continue_response == 'yes'
             if not continue_in_system:
                 print("Goodbye!")
 
         except ValueError as e:
             print(e)
+            return -1
 
 if __name__ == "__main__":
     main()
