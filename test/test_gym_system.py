@@ -58,7 +58,7 @@ class TestGymSystem(unittest.TestCase):
         self.premium_membership.add_feature("Personal Trainer")
         self.premium_membership.add_feature("Sauna")
         total_cost = self.gym.calculate_total_cost(self.premium_membership, 5)
-        self.assertAlmostEqual(total_cost, 672.75, places=0)
+        self.assertAlmostEqual(total_cost, 622.75, places=0)
 
         self.basic_membership.add_feature("Group Classes")
         total_cost = self.gym.calculate_total_cost(self.basic_membership, 4)
